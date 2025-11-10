@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { getPosts } from "../models/blogEntriesModel";
 
-export const postDetailController = (req: Request, res: Response) => {
-  const posts = getPosts();
+export const postDetailController = async (req: Request, res: Response) => {
+  const posts = await getPosts();
   const { id } = req.params;
   const post = posts.find((post) => post.id === id);
   if (!post) {
@@ -12,8 +12,8 @@ export const postDetailController = (req: Request, res: Response) => {
   res.render("postdetail.html", { post });
 };
 
-export const postController = (req: Request, res: Response) => {
-  const posts = getPosts();
+export const postController = async (req: Request, res: Response) => {
+  const posts = await getPosts();
   const firstPost = posts[0];
   res.render("post.html", { post: firstPost });
 };
