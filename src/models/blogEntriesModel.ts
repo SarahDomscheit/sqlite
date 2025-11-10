@@ -1,57 +1,84 @@
-import data from "../data/posts.json";
 import { POST } from "../types/Post";
-import { formatDate } from "../utils/formatDate";
+
 import { readFile, writeFile } from "node:fs/promises";
 import * as path from "node:path";
 
 const FILE_PATH = path.join(__dirname, "..", "data", "posts.json");
 
-export async function getAllBlogEntries(): Promise<POST[] | undefined> {
+export async function getAllBlogEntries(): Promise<POST[]> {
   try {
     const blogEntries = await readFile(FILE_PATH, { encoding: "utf-8" });
 
-    if (blogEntries.length === 0) {
-      return [];
-    } else {
-      return JSON.parse(blogEntries);
-    }
+    return JSON.parse(blogEntries);
   } catch (error) {
     console.error("Blog entries missing", error);
-    return undefined;
+    throw error;
   }
 }
 
-export const getPosts = async (): Promise<Array<POST & { id: string }>> => {
-  const posts = await getAllBlogEntries();
-
-  if (!posts) return [];
-
-  return posts.map((post: POST, index: number) => {
-    return {
-      ...post,
-      createdAt: post.createdAt,
-      id: (index + 1).toString(),
-    };
-  });
-};
-
-export const savePosts = async (
-  posts: Array<Omit<POST, "createdAt"> & { id: string }>
-) => {
+export const writePosts = async (posts: POST[]): Promise<void> => {
   try {
-    const postsToSave = posts.map((post) => ({
-      title: post.title,
-      author: post.author,
-      content: post.content,
-      teaser: post.teaser,
-      image: post.image,
-      createdAt: Date.now() / 1000,
-    }));
-
-    await writeFile(FILE_PATH, JSON.stringify(postsToSave, null, 2));
-    return true;
+    await writeFile(FILE_PATH, JSON.stringify(posts, null, 2));
   } catch (error) {
     console.error("Error saving posts:", error);
-    return false;
+    throw error;
   }
+};
+
+export const getAllPosts = async (): Promise<POST[]> => {
+  return await getAllBlogEntries();
+};
+
+export const getPost = async (id: string): Promise<POST> => {
+  const posts = await getAllBlogEntries();
+  const post = posts.find((post) => post.id === id);
+
+  if (!post) {
+    throw new Error(`Post with id ${id} not found`);
+  }
+
+  return post;
+};
+
+export const deletePost = async (id: string): Promise<void> => {
+  const posts = await getAllBlogEntries();
+  const filteredPosts = posts.filter((post) => post.id !== id);
+  await writePosts(filteredPosts);
+};
+
+export const createPost = async (
+  postData: Omit<POST, "id" | "createdAt">
+): Promise<POST> => {
+  const posts = await getAllBlogEntries();
+
+  const newPost: POST = {
+    ...postData,
+    id: (posts.length + 1).toString(),
+    createdAt: new Date().toISOString(),
+  };
+
+  posts.push(newPost);
+  await writePosts(posts);
+
+  return newPost;
+};
+
+export const updatePost = async (
+  id: string,
+  postData: Partial<Omit<POST, "id" | "createdAt">>
+): Promise<POST> => {
+  const posts = await getAllBlogEntries();
+  const postIndex = posts.findIndex((post) => post.id === id);
+
+  if (postIndex === -1) {
+    throw new Error(`Post with id ${id} not found`);
+  }
+
+  posts[postIndex] = {
+    ...posts[postIndex],
+    ...postData,
+  };
+
+  await writePosts(posts);
+  return posts[postIndex];
 };

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { getPosts, getAllBlogEntries } from "../models/blogEntriesModel";
+import { getAllPosts } from "../models/blogEntriesModel";
 
 export const homeController = async (req: Request, res: Response) => {
-  const posts = await getPosts();
+  const posts = await getAllPosts();
   res.render("index.njk", { posts });
 };

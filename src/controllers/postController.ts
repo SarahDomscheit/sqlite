@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { getPosts } from "../models/blogEntriesModel";
+import { getAllPosts } from "../models/blogEntriesModel";
 
 export const postDetailController = async (req: Request, res: Response) => {
-  const posts = await getPosts();
+  const posts = await getAllPosts();
   const { id } = req.params;
   const post = posts.find((post) => post.id === id);
   if (!post) {
@@ -13,7 +13,7 @@ export const postDetailController = async (req: Request, res: Response) => {
 };
 
 export const postController = async (req: Request, res: Response) => {
-  const posts = await getPosts();
+  const posts = await getAllPosts();
   const firstPost = posts[0];
   res.render("post.njk", { post: firstPost });
 };
