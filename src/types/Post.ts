@@ -2,7 +2,7 @@ export interface POST {
   title: string;
   image: string;
   author: string;
-  createdAt: number;
+  createdAt: string;
   teaser: string;
   content: string;
 }

@@ -1,0 +1,42 @@
+{% extends "../layouts/adminLayout.html" %} {% block content %}
+<main class="container">
+  <article>
+    <header>
+      <h1>Admin Dashboard</h1>
+    </header>
+
+    <nav>
+      <a href="/admin/create" role="button">Add New Post</a>
+    </nav>
+
+    {% if posts and posts.length > 0 %}
+    <table class="mt-4">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Settings</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for post in posts %}
+        <tr>
+          <td>{{ post.title }}</td>
+          <td>
+            <a href="/admin/edit/{{ post.id }}" role="button" class="secondary"
+              >Edit</a
+            >
+            <a href="/admin/delete/{{ post.id }}" role="button" class="contrast"
+              >Delete</a
+            >
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p>No Blog Entries to show</p>
+    {% endif %}
+  </article>
+</main>
+
+{% endblock %}

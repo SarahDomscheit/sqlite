@@ -7,6 +7,7 @@
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "nunjucks": "^3.2.4",
+    "sanitize-html": "^2.17.0",
     "startbootstrap-clean-blog": "^6.0.9"
   },
   "name": "nunjucks-blog",
@@ -25,6 +26,7 @@
   "devDependencies": {
     "@types/express": "^5.0.5",
     "@types/node": "^24.10.0",
+    "@types/sanitize-html": "^2.16.0",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"

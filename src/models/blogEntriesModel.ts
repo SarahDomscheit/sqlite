@@ -1,19 +1,58 @@
 import data from "../data/posts.json";
 import { POST } from "../types/Post";
 import { formatDate } from "../utils/formatDate";
+import { readFile, writeFile } from "node:fs/promises";
+import * as path from "node:path";
 
-export const getPosts = (): (Omit<POST, "createdAt"> & {
-  createdAt: string;
-  id: string;
-})[] => {
-  return data.map((post: POST, index: number) => {
-    if (typeof post.createdAt !== "number") {
-      throw new Error(`Ungültiger Timestamp für Post ${index + 1}`);
+const FILE_PATH = path.join(__dirname, "..", "data", "posts.json");
+
+export async function getAllBlogEntries() {
+  try {
+    const blogEntries = await readFile(FILE_PATH, { encoding: "utf-8" });
+
+    if (blogEntries.length === 0) {
+      return [];
+    } else {
+      return JSON.parse(blogEntries);
     }
+  } catch (error) {}
+}
+
+export const getPosts = async (): Promise<
+  (Omit<POST, "createdAt"> & {
+    createdAt: string;
+    id: string;
+  })[]
+> => {
+  const posts = await getAllBlogEntries();
+
+  if (!posts) return [];
+
+  return posts.map((post: POST, index: number) => {
     return {
       ...post,
-      createdAt: formatDate(post.createdAt),
+      createdAt: post.createdAt,
       id: (index + 1).toString(),
     };
   });
+};
+export const savePosts = async (
+  posts: Array<Omit<POST, "createdAt"> & { id: string }>
+) => {
+  try {
+    const postsToSave = posts.map((post) => ({
+      title: post.title,
+      author: post.author,
+      content: post.content,
+      teaser: post.teaser,
+      image: post.image,
+      createdAt: Date.now() / 1000,
+    }));
+
+    await writeFile(FILE_PATH, JSON.stringify(postsToSave, null, 2));
+    return true;
+  } catch (error) {
+    console.error("Error saving posts:", error);
+    return false;
+  }
 };

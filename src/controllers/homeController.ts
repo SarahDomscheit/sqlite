@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
-import { getPosts } from "../models/blogEntriesModel";
+import { getPosts, getAllBlogEntries } from "../models/blogEntriesModel";
 
 export const homeController = (req: Request, res: Response) => {
+  getAllBlogEntries();
   const posts = getPosts();
   res.render("index.html", { posts });
 };
