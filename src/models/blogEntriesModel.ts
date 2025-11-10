@@ -25,13 +25,27 @@ export const writePosts = async (posts: POST[]): Promise<void> => {
   }
 };
 
-export const getAllPosts = async (): Promise<POST[]> => {
-  return await getAllBlogEntries();
+export const getAllPosts = async (): Promise<Array<POST & { id: string }>> => {
+  const posts = await getAllBlogEntries();
+
+  if (!posts) return [];
+
+  return posts.map((post, index) => ({
+    ...post,
+    id: (index + 1).toString(),
+  }));
 };
 
 export const getPost = async (id: string): Promise<POST> => {
   const posts = await getAllBlogEntries();
-  const post = posts.find((post) => post.id === id);
+  let post = posts.find((post) => post.id === id);
+
+  if (!post) {
+    let index = parseInt(id) - 1;
+    if (index >= 0 && index < posts.length) {
+      post = posts[index];
+    }
+  }
 
   if (!post) {
     throw new Error(`Post with id ${id} not found`);
@@ -42,8 +56,15 @@ export const getPost = async (id: string): Promise<POST> => {
 
 export const deletePost = async (id: string): Promise<void> => {
   const posts = await getAllBlogEntries();
-  const filteredPosts = posts.filter((post) => post.id !== id);
-  await writePosts(filteredPosts);
+
+  const postIndex = posts.findIndex((post) => post.id === id);
+
+  if (postIndex === -1) {
+    throw new Error(`Post with id ${id} not found`);
+  }
+
+  posts.splice(postIndex, 1);
+  await writePosts(posts);
 };
 
 export const createPost = async (
@@ -54,7 +75,7 @@ export const createPost = async (
   const newPost: POST = {
     ...postData,
     id: (posts.length + 1).toString(),
-    createdAt: new Date().toISOString(),
+    createdAt: Math.floor(Date.now() / 1000),
   };
 
   posts.push(newPost);
@@ -68,17 +89,21 @@ export const updatePost = async (
   postData: Partial<Omit<POST, "id" | "createdAt">>
 ): Promise<POST> => {
   const posts = await getAllBlogEntries();
-  const postIndex = posts.findIndex((post) => post.id === id);
+  const postIndex = parseInt(id) - 1;
 
-  if (postIndex === -1) {
+  if (postIndex < 0 || postIndex >= posts.length) {
     throw new Error(`Post with id ${id} not found`);
   }
 
   posts[postIndex] = {
     ...posts[postIndex],
     ...postData,
+    createdAt: Math.floor(Date.now() / 1000),
   };
 
   await writePosts(posts);
-  return posts[postIndex];
+  return {
+    ...posts[postIndex],
+    id: id,
+  };
 };

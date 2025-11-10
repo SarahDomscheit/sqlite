@@ -11,9 +11,9 @@ const router = express.Router();
 
 router
   .get("/", homeController)
+  .get("/post", postController)
   .get("/post/:id", postDetailController)
   .get("/about", aboutController)
-  .get("/contact", contactController)
-  .get("/post", postController);
+  .get("/contact", contactController);
 
 export default router;

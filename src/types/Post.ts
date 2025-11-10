@@ -3,7 +3,7 @@ export interface POST {
   title: string;
   image: string;
   author: string;
-  createdAt: string;
+  createdAt: string | number;
   teaser: string;
   content: string;
 }

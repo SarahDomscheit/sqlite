@@ -25,5 +25,5 @@ app.use(express.static("src/public"));
 app.use(postRouter).use("/admin", adminRoutes);
 
 app.listen(port, () => {
-  console.log(`server running on port:${port}`);
+  console.log(`Server running on http://localhost:${port}`);
 });

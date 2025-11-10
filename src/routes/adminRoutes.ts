@@ -3,6 +3,8 @@ import {
   createPostController,
   deletePostController,
   entriesListing,
+  showCreatePage,
+  showEditPage,
   updatePostController,
 } from "../controllers/admin/blogController";
 
@@ -11,9 +13,12 @@ const router = express.Router();
 router
   .get("/", entriesListing)
 
-  .get("/post", createPostController)
+  .get("/create", showCreatePage)
+  .post("/create", createPostController)
 
-  .patch("/post/:id", updatePostController)
-  .delete("/post/:id", deletePostController);
+  .get("/edit/:id", showEditPage)
+  .patch("/edit/:id", updatePostController)
+
+  .delete("/delete/:id", deletePostController);
 
 export default router;
