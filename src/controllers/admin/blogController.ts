@@ -26,32 +26,49 @@ export const showCreatePage = async (req: Request, res: Response) => {
 
 // New Post
 export const createPostController = async (req: Request, res: Response) => {
-  const newPost = await createPost({
-    ...req.body,
-    image: req.body.image || "",
-  });
-
-  res.status(201).json(newPost);
-  res.redirect("/admin");
+  try {
+    await createPost({
+      ...req.body,
+      image: req.body.image || "/images/",
+    });
+    res.redirect("/admin");
+  } catch (error) {
+    console.error("Error creating post:", error);
+    res.status(500).send("Error creating post");
+  }
 };
 
 // Show edit page
 export const showEditPage = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const post = await getPost(id);
-  res.render("../views/admin/editPage.njk", { post });
+  try {
+    const { id } = req.params;
+    const post = await getPost(id);
+    res.render("../views/admin/editPage.njk", { post });
+  } catch (error) {
+    console.error("Error loading post:", error);
+    res.status(404).send("Post not found");
+  }
 };
 
 // Update Post
 export const updatePostController = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  await updatePost(id, req.body);
-  res.redirect("/admin");
+  try {
+    const { id } = req.params;
+    await updatePost(id, req.body);
+    res.redirect("/admin");
+  } catch (error) {
+    console.error("Error updating post:", error);
+    res.status(500).send("Error updating post");
+  }
 };
 
 export const deletePostController = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  await deletePost(id);
-
-  res.redirect("/admin");
+  try {
+    const { id } = req.params;
+    await deletePost(id);
+    res.redirect("/admin");
+  } catch (error) {
+    console.error("Error deleting post:", error);
+    res.status(500).send("Error deleting post");
+  }
 };

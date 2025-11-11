@@ -21,7 +21,7 @@ export function connectDB(): Promise<sqlite3.Database> {
           db!.run(
             `
                     CREATE TABLE IF NOT EXISTS blog_entries (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        id TEXT PRIMARY KEY,
                         title TEXT NOT NULL,
                         teaser TEXT NOT NULL,
                         author TEXT NOT NULL,
