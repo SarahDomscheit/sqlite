@@ -1,0 +1,16 @@
+.flex {
+  display: flex;
+  flex-direction: row;
+}
+
+.justify {
+  justify-content: space-between;
+}
+
+.gap {
+  gap: 1rem;
+}
+
+div {
+  margin: 1rem;
+}

@@ -3,10 +3,11 @@ import { POST } from "../types/Post";
 import { readFile, writeFile } from "node:fs/promises";
 import * as path from "node:path";
 import { generateSlug } from "../utils/generateSlug";
+import { getDB } from "../db/database";
 
 const FILE_PATH = path.join(__dirname, "..", "data", "posts.json");
 
-export async function getAllBlogEntries(): Promise<POST[]> {
+/*export async function getAllBlogEntries(): Promise<POST[]> {
   try {
     const blogEntries = await readFile(FILE_PATH, { encoding: "utf-8" });
 
@@ -15,6 +16,24 @@ export async function getAllBlogEntries(): Promise<POST[]> {
     console.error("Blog entries missing", error);
     throw error;
   }
+}*/
+
+export async function getAllBlogEntries(): Promise<POST[]> {
+  const db = getDB();
+
+  return new Promise((resolve, reject) => {
+    db.all<POST>(
+      `SELECT * FROM blog_entries`,
+      [],
+      (error: Error | null, rows: POST[]) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(rows);
+        }
+      }
+    );
+  });
 }
 
 export const writePosts = async (posts: POST[]): Promise<void> => {

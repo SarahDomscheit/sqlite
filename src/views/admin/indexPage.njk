@@ -5,16 +5,17 @@
       <h1>Admin Dashboard</h1>
     </header>
 
-    <nav>
+    <div class="flex justify">
+      <h2>Blog Entries</h2>
       <a href="/admin/create" role="button">Add New Post</a>
-    </nav>
+    </div>
 
     {% if posts and posts.length > 0 %}
     <table class="mt-4">
       <thead>
         <tr>
           <th>Title</th>
-          <th>Settings</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -22,12 +23,15 @@
         <tr>
           <td>{{ post.title }}</td>
           <td>
-            <a href="/admin/edit/{{ post.id }}" role="button" class="secondary"
-              >Edit</a
-            >
-            <form action="/admin/delete/{{ post.id }}" method="POST">
-              <button class="contrast">Delete</button>
-            </form>
+            <div class="flex gap">
+              <a href="/admin/edit/{{ post.id }}" role="button" class="primary"
+                >Edit</a
+              >
+
+              <form action="/admin/delete/{{ post.id }}" method="POST">
+                <button class="secondary">Delete</button>
+              </form>
+            </div>
           </td>
         </tr>
         {% endfor %}
